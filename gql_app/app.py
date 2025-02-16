@@ -1,9 +1,35 @@
+import os
+
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from graphene import Field, Int, List, ObjectType, Schema, String
+from sqlalchemy import Column, Integer, create_engine
+from sqlalchemy import String as saString
+from sqlalchemy.ext.declarative import declarative_base
 from starlette_graphene3 import (
     GraphQLApp,
     make_graphiql_handler,
 )
+
+load_dotenv()
+
+DB_URL = os.getenv('DB_URL')
+engine = create_engine(DB_URL)
+# conn = engine.connect()
+
+Base = declarative_base()
+
+
+class Employer(Base):
+    __tablename__ = 'employers'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(saString)
+    email = Column(saString)
+    industry = Column(saString)
+
+
+Base.metadata.create_all(engine)
 
 employers_data = [
     {'id': 1, 'name': 'Apple', 'email': 'demo1@gmail.com', 'industry': 'Tech'},

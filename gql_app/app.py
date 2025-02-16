@@ -1,7 +1,10 @@
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 from graphene import ObjectType, Schema, String
-from starlette_graphene3 import GraphQLApp
+from starlette_graphene3 import (
+    GraphQLApp,
+    make_graphiql_handler,
+    make_playground_handler,
+)
 
 
 class Query(ObjectType):
@@ -14,8 +17,15 @@ class Query(ObjectType):
 schema = Schema(query=Query)
 
 app = FastAPI()
-app.mount('/gql', GraphQLApp(schema=schema))
+app.mount(
+    '/gql',
+    GraphQLApp(schema=schema, on_get=make_graphiql_handler()),
+)
 
+app.mount(
+    '/gql-p',
+    GraphQLApp(schema=schema, on_get=make_playground_handler()),
+)
 
 # @app.get('/')
 # def read_root():

@@ -3,9 +3,10 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from graphene import Field, Int, List, ObjectType, Schema, String
-from sqlalchemy import Column, Integer, create_engine
+from sqlalchemy import Column, ForeignKey, Integer, create_engine
 from sqlalchemy import String as saString
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, sessionmaker
 from starlette_graphene3 import (
     GraphQLApp,
     make_graphiql_handler,
@@ -27,9 +28,26 @@ class Employer(Base):
     name = Column(saString)
     email = Column(saString)
     industry = Column(saString)
+    jobs = relationship('Job', back_populates='employer')
+
+
+class Job(Base):
+    __tablename__ = 'jobs'
+
+    id = Column(Integer, primary_key=True)
+    title = Column(saString)
+    description = Column(saString)
+    employer_id = Column(Integer, ForeignKey('employers.id'))
+    employer = relationship('Employer', back_populates='jobs')
 
 
 Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# emp1 = Employer(id=1, name='Apple', email='demo1@gmail.com', industry='Tech')
+# session.add(emp1)
+
 
 employers_data = [
     {'id': 1, 'name': 'Apple', 'email': 'demo1@gmail.com', 'industry': 'Tech'},
@@ -74,6 +92,17 @@ jobs_data = [
         'employer_id': 4,
     },
 ]
+
+for employer in employers_data:
+    emp_ = Employer(**employer)
+    session.add(emp_)
+
+for job in jobs_data:
+    job_ = Job(**job)
+    session.add(job_)
+
+
+session.commit()
 
 
 class EmployerObject(ObjectType):

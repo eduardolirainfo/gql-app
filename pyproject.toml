@@ -1,0 +1,48 @@
+[project]
+name = "gql-app"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "eduardolirainfo",email = "eduardolirainfo@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.9,<4"
+dependencies = [
+    "fastapi (>=0.115.8,<0.116.0)",
+    "starlette-graphene3 (>=0.6.0,<0.7.0)",
+    "uvicorn (>=0.34.0,<0.35.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+skip-string-normalization = true
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.9.6"
+taskipy = "^1.14.1"
+
+[tool.ruff]
+line-length = 79
+exclude = ["migrations", "tests"]
+fix = true  # Ativar correções automáticas
+
+[tool.ruff.lint]
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+[tool.ruff.format]
+preview = true
+quote-style = 'single'
+
+
+[tool.taskipy.tasks]
+
+lint = 'ruff check . && ruff check . --diff'
+format = 'ruff check . --fix && ruff format .'
+run = 'poetry run uvicorn gql_app.app:app --reload'
+pre_test = 'task lint'
+test = 'pytest -s -x --cov=gql_app -vv'
+post_test = 'coverage html'
+

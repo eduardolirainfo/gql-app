@@ -1,0 +1,26 @@
+annotated-types==0.7.0
+anyio==4.5.2
+click==8.1.8
+colorama==0.4.6
+fastapi==0.115.8
+# Editable install with no version control (gql-app==0.1.0)
+-e /home/eduardolira/Work/gql-app
+graphene==3.4.3
+-e git+https://github.com/eduardolirainfo/graphene-start.git@12d7ea775e471b309625c8a3ba5c1d2c994efe2e#egg=graphene_start
+graphql-core==3.2.6
+graphql-relay==3.2.0
+h11==0.14.0
+idna==3.10
+psutil==6.1.1
+pydantic==2.10.6
+pydantic_core==2.27.2
+python-dateutil==2.9.0.post0
+ruff==0.9.6
+six==1.17.0
+sniffio==1.3.1
+starlette==0.44.0
+starlette-graphene3==0.6.0
+taskipy==1.14.1
+tomli==2.0.1
+typing_extensions==4.12.2
+uvicorn==0.34.0

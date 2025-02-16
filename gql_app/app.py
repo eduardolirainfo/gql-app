@@ -63,7 +63,12 @@ employers_data = [
         'email': 'demo3@gmail.com',
         'industry': 'Tech',
     },
-    {'id': 4, 'name': 'Life', 'email': 'demo4@gmai.com', 'industry': 'Health'},
+    {
+        'id': 4,
+        'name': 'Life Style',
+        'email': 'demo4@gmail.com',
+        'industry': 'Health',
+    },
 ]
 
 jobs_data = [
@@ -81,8 +86,8 @@ jobs_data = [
     },
     {
         'id': 3,
-        'title': 'Software Engineer',
-        'description': 'React Developer',
+        'title': 'Psychologist',
+        'description': 'Counselor',
         'employer_id': 3,
     },
     {
@@ -91,18 +96,31 @@ jobs_data = [
         'description': 'Java Developer',
         'employer_id': 4,
     },
+    {
+        'id': 5,
+        'title': 'Plumber',
+        'description': 'Indepedent Contractor',
+        'employer_id': 2,
+    },
 ]
 
-for employer in employers_data:
-    emp_ = Employer(**employer)
-    session.add(emp_)
 
-for job in jobs_data:
-    job_ = Job(**job)
-    session.add(job_)
+def prepare_data():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
 
+    session = Session()
 
-session.commit()
+    for employer in employers_data:
+        emp_ = Employer(**employer)
+        session.add(emp_)
+
+    for job in jobs_data:
+        job_ = Job(**job)
+        session.add(job_)
+
+    session.commit()
+    session.close()
 
 
 class EmployerObject(ObjectType):
@@ -149,6 +167,12 @@ class Query(ObjectType):
 schema = Schema(query=Query)
 
 app = FastAPI()
+
+
+@app.on_event('startup')
+async def on_startup():
+    prepare_data()
+
 
 app.mount(
     '/gql',

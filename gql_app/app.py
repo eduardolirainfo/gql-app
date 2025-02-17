@@ -4,8 +4,9 @@ from starlette_graphene3 import (
     GraphQLApp,
     make_graphiql_handler,
 )
+
+from gql_app.db.database import Session, prepare_data
 from gql_app.db.models import Employer, Job
-from gql_app.db.database import prepare_data, Session
 from gql_app.gql.queries import Query
 
 schema = Schema(query=Query)

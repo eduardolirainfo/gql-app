@@ -4,8 +4,8 @@ from starlette_graphene3 import (
     GraphQLApp,
     make_graphiql_handler,
 )
-
-from gql_app.db.database import prepare_data
+from gql_app.db.models import Employer, Job
+from gql_app.db.database import prepare_data, Session
 from gql_app.gql.queries import Query
 
 schema = Schema(query=Query)
@@ -23,9 +23,32 @@ app.mount(
     GraphQLApp(schema=schema, on_get=make_graphiql_handler()),
 )
 
-# @app.get('/')
-# def read_root():
-#     return {'Hello': 'World'}
+
+@app.get('/employers')
+def get_employers():
+    session = Session()
+    employers = session.query(Employer).all()
+    session.close()
+    return employers
+
+
+@app.get('/employers/{employer_id}')
+def get_employer(employer_id: int):
+    session = Session()
+    employer = session.query(Employer).get(employer_id)
+    session.close()
+    return employer
+
+
+@app.get('/jobs')
+def get_jobs():
+    # session = Session()
+    # jobs = session.query(Job).all()
+    # session.close()
+    # return jobs
+    with Session() as session:
+        jobs = session.query(Job).all()
+        return jobs
 
 
 # @app.get('/hello/{name}')

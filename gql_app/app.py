@@ -7,9 +7,10 @@ from starlette_graphene3 import (
 
 from gql_app.db.database import Session, prepare_data
 from gql_app.db.models import Employer, Job
+from gql_app.gql.mutations import Mutation
 from gql_app.gql.queries import Query
 
-schema = Schema(query=Query)
+schema = Schema(query=Query, mutation=Mutation)
 
 app = FastAPI()
 

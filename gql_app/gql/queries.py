@@ -1,4 +1,4 @@
-from graphene import List, ObjectType
+from graphene import Argument, Int, List, ObjectType
 from sqlalchemy.orm import joinedload
 
 from gql_app.db.database import Session
@@ -7,17 +7,23 @@ from gql_app.gql.types import EmployerObject, JobObject
 
 
 class Query(ObjectType):
-    employers = List(EmployerObject)
-    jobs = List(JobObject)
+    employers = List(EmployerObject, id=Argument(Int))
+    jobs = List(JobObject, employer_id=Argument(Int))
 
     @staticmethod
-    def resolve_jobs(root, info):
+    def resolve_jobs(root, info, employer_id=None):
         # return Session().query(Job).all()
-        return Session().query(Job).options(joinedload(Job.employer)).all()
+        session = Session()
+        query = session.query(Job).options(joinedload(Job.employer))
+        if employer_id is not None:
+            query = query.filter(Job.employer_id == employer_id)
+        return query.all()
 
     @staticmethod
-    def resolve_employers(root, info):
+    def resolve_employers(root, info, id=None):
         # return Session().query(Employer).all()
-        return (
-            Session().query(Employer).options(joinedload(Employer.jobs)).all()
-        )
+        session = Session()
+        query = session.query(Employer).options(joinedload(Employer.jobs))
+        if id is not None:
+            query = query.filter(Employer.id == id)
+        return query.all()

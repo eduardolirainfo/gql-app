@@ -15,7 +15,7 @@ Base = declarative_base()
 class Employer(Base):
     __tablename__ = 'employers'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(saString)
     email = Column(saString)
     industry = Column(saString)
@@ -25,7 +25,7 @@ class Employer(Base):
 class Job(Base):
     __tablename__ = 'jobs'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(saString)
     description = Column(saString)
     employer_id = Column(Integer, ForeignKey('employers.id'))

@@ -37,21 +37,14 @@ class UpdateJob(Mutation):
     job = Field(lambda: JobObject)
 
     @staticmethod
-    def mutate(
-        root, info, job_id, title=None, description=None, employer_id=None
-    ):
+    def mutate(root, info, job_id, **kwargs):
         session = Session()
         job = session.query(Job).filter(Job.id == job_id).first()
-
         if not job:
-            raise Exception(f'Job with id {id} not found')
+            raise Exception(f'Job com id {job_id} não encontrado')
 
-        if title:
-            job.title = title
-        if description:
-            job.description = description
-        if employer_id:
-            job.employer_id = employer_id
+        for key, value in kwargs.items():
+            setattr(job, key, value)
 
         session.commit()
         session.refresh(job)

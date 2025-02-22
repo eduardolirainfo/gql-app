@@ -44,20 +44,13 @@ def get_employer(employer_id: int):
 
 @app.get('/jobs')
 def get_jobs():
-    # session = Session()
-    # jobs = session.query(Job).all()
-    # session.close()
-    # return jobs
     with Session() as session:
         jobs = session.query(Job).all()
         return jobs
 
 
-# @app.get('/hello/{name}')
-# def read_item(name: str):
-#     return {'Hello': name}
-
-
-# @app.get('/error')
-# def read_error():
-#     return JSONResponse(status_code=500, content={'error': 'Server error'})
+@app.get('/jobs/{job_id}')
+def get_job(job_id: int):
+    with Session() as session:
+        job = session.query(Job).get(job_id)
+        return job

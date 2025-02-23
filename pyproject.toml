@@ -40,7 +40,6 @@ quote-style = 'single'
 
 
 [tool.taskipy.tasks]
-
 lint = 'ruff check . && ruff check . --diff'
 format = 'ruff check . --fix && ruff format .'
 run = 'poetry run uvicorn gql_app.app:app --reload'

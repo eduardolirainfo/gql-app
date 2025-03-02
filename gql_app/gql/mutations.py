@@ -1,8 +1,8 @@
 from graphene import Boolean, Field, Int, Mutation, ObjectType, String
 
 from gql_app.db.database import Session
-from gql_app.db.models import Job
-from gql_app.gql.types import JobObject
+from gql_app.db.models import Employer, Job
+from gql_app.gql.types import EmployerObject, JobObject
 
 
 class AddJob(Mutation):
@@ -71,7 +71,30 @@ class DeleteJob(Mutation):
         return DeleteJob(success=True)
 
 
+class AddEmployer(Mutation):
+    class Arguments:
+        name = String(required=True)
+        email = String(required=True)
+        industry = String(required=True)
+
+    employer = Field(lambda: EmployerObject)
+
+    @staticmethod
+    def mutate(root, info, name, email, industry):
+        session = Session()
+        employer = Employer(
+            name=name,
+            email=email,
+            industry=industry,
+        )
+        session.add(employer)
+        session.commit()
+        session.refresh(employer)
+        return AddEmployer(employer=employer)
+
+
 class Mutation(ObjectType):
     add_job = AddJob.Field()
     update_job = UpdateJob.Field()
     delete_job = DeleteJob.Field()
+    add_employer = AddEmployer.Field()

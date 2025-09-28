@@ -1,16 +1,26 @@
+import strawberry
 from fastapi import FastAPI
-from graphene import Schema
-from starlette_graphene3 import (
-    GraphQLApp,
-    make_graphiql_handler,
-)
+from strawberry.fastapi import GraphQLRouter
 
 from gql_app.db.database import Session, prepare_data
 from gql_app.db.models import Employer, Job
-from gql_app.gql.mutations import Mutation
-from gql_app.gql.queries import Query
+from gql_app.gql.emmployers.mutations import Mutation as EmployerMutation
+from gql_app.gql.emmployers.queries import Query as EmployerQuery
+from gql_app.gql.job.mutations import Mutation as JobMutation
+from gql_app.gql.job.queries import Query as JobQuery
 
-schema = Schema(query=Query, mutation=Mutation)
+
+@strawberry.type
+class Mutation(EmployerMutation, JobMutation):
+    pass
+
+
+@strawberry.type
+class Query(EmployerQuery, JobQuery):
+    pass
+
+
+schema = strawberry.Schema(query=Query, mutation=Mutation)
 
 app = FastAPI()
 
@@ -20,10 +30,8 @@ async def on_startup():
     prepare_data()
 
 
-app.mount(
-    '/gql',
-    GraphQLApp(schema=schema, on_get=make_graphiql_handler()),
-)
+graphql_app = GraphQLRouter(schema)
+app.include_router(graphql_app, prefix='/gql')
 
 
 @app.get('/employers')
@@ -44,13 +52,15 @@ def get_employer(employer_id: int):
 
 @app.get('/jobs')
 def get_jobs():
-    with Session() as session:
-        jobs = session.query(Job).all()
-        return jobs
+    session = Session()
+    jobs = session.query(Job).all()
+    session.close()
+    return jobs
 
 
 @app.get('/jobs/{job_id}')
 def get_job(job_id: int):
-    with Session() as session:
-        job = session.query(Job).get(job_id)
-        return job
+    session = Session()
+    job = session.query(Job).get(job_id)
+    session.close()
+    return job
